@@ -29,6 +29,11 @@
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
+#include "TrackingTools/TransientTrack/interface/TransientTrack.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
+#include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
 
 
 typedef edm::View<reco::Candidate> CandView;
@@ -57,6 +62,7 @@ ElectronVariableHelper<T>::ElectronVariableHelper(const edm::ParameterSet & iCon
   produces<edm::ValueMap<float> >("chi2");
   produces<edm::ValueMap<float> >("dz");
   produces<edm::ValueMap<float> >("dxy");
+  produces<edm::ValueMap<float> >("dxysig");
   produces<edm::ValueMap<float> >("missinghits");
   produces<edm::ValueMap<float> >("l1e");
   produces<edm::ValueMap<float> >("l1et");
@@ -85,6 +91,13 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
   iEvent.getByToken(vtxToken_, vtxH);
   const reco::VertexRef vtx(vtxH, 0);
 
+  reco::Vertex pv;
+  if (vtxH->size()) pv = vtxH->at(0);
+  GlobalPoint pVertex(pv.position().x(),pv.position().y(),pv.position().z());
+
+  edm::ESHandle<TransientTrackBuilder> trackBuilder;
+  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",trackBuilder);
+
   edm::Handle<BXVector<l1t::EGamma> > l1Cands;
   iEvent.getByToken(l1EGTkn, l1Cands);
   
@@ -95,6 +108,7 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
   std::vector<float> chi2Vals;
   std::vector<float> dzVals;
   std::vector<float> dxyVals;
+  std::vector<float> dxysigVals;
   std::vector<float> mhVals;
   std::vector<float> l1EVals;
   std::vector<float> l1EtVals;
@@ -109,6 +123,18 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
     chi2Vals.push_back(probe->gsfTrack()->normalizedChi2());
     dzVals.push_back(probe->gsfTrack()->dz(vtx->position()));
     dxyVals.push_back(probe->gsfTrack()->dxy(vtx->position()));
+
+    TrajectoryStateOnSurface eleTSOS;
+    reco::TransientTrack eletranstrack = trackBuilder->build( probe->gsfTrack() );
+    eleTSOS = IPTools::transverseExtrapolate(eletranstrack.impactPointState(), pVertex, eletranstrack.field());
+    float this_sip = 0.;
+    if(eleTSOS.isValid()) {
+      std::pair<bool, Measurement1D> eleIPpair = IPTools::signedTransverseImpactParameter(eletranstrack, eleTSOS.globalDirection(), pv);
+      float eleSignificanceIP = eleIPpair.second.significance();
+      this_sip = eleSignificanceIP;
+    }
+    dxysigVals.push_back(this_sip);
+
     mhVals.push_back(float(probe->gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS)));
 
     float l1e = 999999.;    
@@ -163,6 +189,12 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
   dxyFiller.insert(probes, dxyVals.begin(), dxyVals.end());
   dxyFiller.fill();
   iEvent.put(std::move(dxyValMap), "dxy");
+
+  std::unique_ptr<edm::ValueMap<float> > dxysigValMap(new edm::ValueMap<float>());
+  edm::ValueMap<float>::Filler dxysigFiller(*dxysigValMap);
+  dxysigFiller.insert(probes, dxysigVals.begin(), dxysigVals.end());
+  dxysigFiller.fill();
+  iEvent.put(std::move(dxysigValMap), "dxysig");
 
   std::unique_ptr<edm::ValueMap<float> > mhValMap(new edm::ValueMap<float>());
   edm::ValueMap<float>::Filler mhFiller(*mhValMap);

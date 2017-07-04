@@ -4,6 +4,8 @@
   <use   name="FWCore/ParameterSet"/>
   <use   name="PhysicsTools/TagAndProbe"/>
   <use   name="HLTrigger/HLTcore"/>
+  <use   name="TrackingTools/IPTools"/>
+  <use   name="TrackingTools/TransientTrack"/>
   <use   name="DataFormats/PatCandidates"/>
   <use   name="DataFormats/Candidate"/>
   <use   name="CommonTools/Utils"/>
