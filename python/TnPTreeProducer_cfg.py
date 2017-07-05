@@ -144,12 +144,19 @@ from EgammaAnalysis.TnPTreeProducer.etc.tnpInputTestFiles_cff import filesMiniAO
 if options['useAOD'] : from EgammaAnalysis.TnPTreeProducer.etc.tnpInputTestFiles_cff import filesAOD_23Sep2016 as inputs
     
 options['INPUT_FILE_NAME'] = inputs['data']
+
+## Small Sample Test @ KNU ##
+#options['INPUT_FILE_NAME'] = cms.untracked.vstring(
+#        '/store/user/jskim/00ED7FAC-3540-E711-954F-D067E5F9217B.root'
+#        )
+
 if varOptions.isMC:  options['INPUT_FILE_NAME'] =  inputs['mc']
 
 
 ###################################################################
 ## import TnP tree maker pythons and configure for AODs
 ###################################################################
+process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
 process.load("Configuration.Geometry.GeometryRecoDB_cff")
 #process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")

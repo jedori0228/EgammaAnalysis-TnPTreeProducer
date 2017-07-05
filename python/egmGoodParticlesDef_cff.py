@@ -62,6 +62,9 @@ def setGoodParticlesMiniAOD(process, options):
                                           l1EGColl         = cms.InputTag('caloStage2Digis:EGamma'),
                                           vertexCollection = cms.InputTag("offlineSlimmedPrimaryVertices"),
                                           #pfCandColl       = cms.InputTag("packedPFCandidates"),
+                                          rhoLabel = cms.InputTag("fixedGridRhoAll"),
+                                          electronsMiniAOD    = cms.InputTag("slimmedElectrons"),
+                                          mvaValuesMap     = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring16GeneralPurposeV1Values"),
                                           )
     
 

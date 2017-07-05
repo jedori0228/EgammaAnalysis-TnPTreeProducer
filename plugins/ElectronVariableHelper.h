@@ -35,7 +35,6 @@
 #include "TrackingTools/IPTools/interface/IPTools.h"
 #include "DataFormats/GeometryCommonDetAlgo/interface/Measurement1D.h"
 
-
 typedef edm::View<reco::Candidate> CandView;
 
 template <class T>
@@ -43,7 +42,11 @@ class ElectronVariableHelper : public edm::EDProducer {
  public:
   explicit ElectronVariableHelper(const edm::ParameterSet & iConfig);
   virtual ~ElectronVariableHelper() ;
-  
+
+  virtual float getEffArea(float scEta);
+  virtual bool PassTrigMVAHNTightv4(double thismva, double scEta);
+  virtual bool PassTrigMVAHNLoose(double thismva, double scEta);
+
   virtual void produce(edm::Event & iEvent, const edm::EventSetup & iSetup) override;
   
 private:
@@ -51,18 +54,29 @@ private:
   edm::EDGetTokenT<reco::VertexCollection> vtxToken_;
   edm::EDGetTokenT<BXVector<l1t::EGamma> > l1EGTkn;
   edm::EDGetTokenT<CandView> pfCandToken_;
+  edm::EDGetTokenT<double> rhoLabel_;
+  edm::EDGetToken electronsMiniAODToken_;
+  edm::EDGetTokenT<edm::ValueMap<float> > mvaValuesMapToken_;
 };
 
 template<class T>
 ElectronVariableHelper<T>::ElectronVariableHelper(const edm::ParameterSet & iConfig) :
   probesToken_(consumes<std::vector<T> >(iConfig.getParameter<edm::InputTag>("probes"))),
   vtxToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"))),
-  l1EGTkn(consumes<BXVector<l1t::EGamma> >(iConfig.getParameter<edm::InputTag>("l1EGColl"))) {
+  l1EGTkn(consumes<BXVector<l1t::EGamma> >(iConfig.getParameter<edm::InputTag>("l1EGColl"))),
+  rhoLabel_(consumes<double>(iConfig.getParameter<edm::InputTag>("rhoLabel"))),
+  mvaValuesMapToken_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("mvaValuesMap")))
+ {
 
   produces<edm::ValueMap<float> >("chi2");
   produces<edm::ValueMap<float> >("dz");
   produces<edm::ValueMap<float> >("dxy");
   produces<edm::ValueMap<float> >("dxysig");
+  produces<edm::ValueMap<float> >("mva");
+  produces<edm::ValueMap<float> >("HNMVATight");
+  produces<edm::ValueMap<float> >("HNMVALoose");
+  produces<edm::ValueMap<float> >("reliso03");
+  produces<edm::ValueMap<float> >("passConversionVeto");
   produces<edm::ValueMap<float> >("missinghits");
   produces<edm::ValueMap<float> >("l1e");
   produces<edm::ValueMap<float> >("l1et");
@@ -73,6 +87,10 @@ ElectronVariableHelper<T>::ElectronVariableHelper(const edm::ParameterSet & iCon
   if( iConfig.existsAs<edm::InputTag>("pfCandColl") ) {
     pfCandToken_ = consumes<CandView>(iConfig.getParameter<edm::InputTag>("pfCandColl"));
   }
+
+  electronsMiniAODToken_    = mayConsume<edm::View<reco::GsfElectron> >
+    (iConfig.getParameter<edm::InputTag>
+     ("electronsMiniAOD"));
 
 }
 
@@ -98,17 +116,31 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
   edm::ESHandle<TransientTrackBuilder> trackBuilder;
   iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",trackBuilder);
 
+  edm::Handle<double> rhoHandle;
+  iEvent.getByToken(rhoLabel_, rhoHandle);
+  double rhoIso = std::max(*(rhoHandle.product()), 0.0);
+
   edm::Handle<BXVector<l1t::EGamma> > l1Cands;
   iEvent.getByToken(l1EGTkn, l1Cands);
+
+  edm::Handle<edm::View<reco::GsfElectron> > electrons;
+  iEvent.getByToken(electronsMiniAODToken_,electrons);
+  edm::Handle<edm::ValueMap<float> > mvaValues;
+  iEvent.getByToken(mvaValuesMapToken_,mvaValues);
   
   edm::Handle<CandView> pfCands;
   if( !pfCandToken_.isUninitialized() ) iEvent.getByToken(pfCandToken_,pfCands);
-  
+
   // prepare vector for output
   std::vector<float> chi2Vals;
   std::vector<float> dzVals;
   std::vector<float> dxyVals;
   std::vector<float> dxysigVals;
+  std::vector<float> mvaVals;
+  std::vector<float> HNMVATightVals;
+  std::vector<float> HNMVALooseVals;
+  std::vector<float> reliso03Vals;
+  std::vector<float> passConversionVetoVals;
   std::vector<float> mhVals;
   std::vector<float> l1EVals;
   std::vector<float> l1EtVals;
@@ -118,8 +150,11 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
 
   typename std::vector<T>::const_iterator probe, endprobes = probes->end();
 
+  int j=0;
   for (probe = probes->begin(); probe != endprobes; ++probe) {
     
+    const auto el = electrons->ptrAt(j);
+
     chi2Vals.push_back(probe->gsfTrack()->normalizedChi2());
     dzVals.push_back(probe->gsfTrack()->dz(vtx->position()));
     dxyVals.push_back(probe->gsfTrack()->dxy(vtx->position()));
@@ -134,6 +169,24 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
       this_sip = eleSignificanceIP;
     }
     dxysigVals.push_back(this_sip);
+
+    passConversionVetoVals.push_back( probe->passConversionVeto() );
+
+    float scEta = probe->superCluster()->eta();
+    double ecalpt = probe->ecalDrivenMomentum().pt();
+    double elEffArea = getEffArea(scEta);
+    double chIso = probe->pfIsolationVariables().sumChargedHadronPt;
+    double nhIso = probe->pfIsolationVariables().sumNeutralHadronEt;
+    double phIso = probe->pfIsolationVariables().sumPhotonEt;
+
+    float relIso = ( chIso + std::max(0.0, nhIso + phIso - rhoIso*elEffArea) )/ ecalpt;
+    reliso03Vals.push_back( relIso );
+
+    float mvaval = (*mvaValues)[el];
+    mvaVals.push_back( mvaval );
+
+    HNMVATightVals.push_back( PassTrigMVAHNTightv4(mvaval, scEta) );
+    HNMVALooseVals.push_back( PassTrigMVAHNLoose(mvaval, scEta) );
 
     mhVals.push_back(float(probe->gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS)));
 
@@ -167,7 +220,8 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
     l1EtaVals.push_back(l1eta);
     l1PhiVals.push_back(l1phi);
     pfPtVals.push_back(pfpt);
-    
+
+    ++j;  
   }
 
   
@@ -195,6 +249,36 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
   dxysigFiller.insert(probes, dxysigVals.begin(), dxysigVals.end());
   dxysigFiller.fill();
   iEvent.put(std::move(dxysigValMap), "dxysig");
+
+  std::unique_ptr<edm::ValueMap<float> > mvaValMap(new edm::ValueMap<float>());
+  edm::ValueMap<float>::Filler mvaFiller(*mvaValMap);
+  mvaFiller.insert(probes, mvaVals.begin(), mvaVals.end());
+  mvaFiller.fill();
+  iEvent.put(std::move(mvaValMap), "mva");
+
+  std::unique_ptr<edm::ValueMap<float> > HNMVATightValMap(new edm::ValueMap<float>());
+  edm::ValueMap<float>::Filler HNMVATightFiller(*HNMVATightValMap);
+  HNMVATightFiller.insert(probes, HNMVATightVals.begin(), HNMVATightVals.end());
+  HNMVATightFiller.fill();
+  iEvent.put(std::move(HNMVATightValMap), "HNMVATight");
+
+  std::unique_ptr<edm::ValueMap<float> > HNMVALooseValMap(new edm::ValueMap<float>());
+  edm::ValueMap<float>::Filler HNMVALooseFiller(*HNMVALooseValMap);
+  HNMVALooseFiller.insert(probes, HNMVALooseVals.begin(), HNMVALooseVals.end());
+  HNMVALooseFiller.fill();
+  iEvent.put(std::move(HNMVALooseValMap), "HNMVALoose");
+
+  std::unique_ptr<edm::ValueMap<float> > reliso03ValMap(new edm::ValueMap<float>());
+  edm::ValueMap<float>::Filler reliso03Filler(*reliso03ValMap);
+  reliso03Filler.insert(probes, reliso03Vals.begin(), reliso03Vals.end());
+  reliso03Filler.fill();
+  iEvent.put(std::move(reliso03ValMap), "reliso03");
+
+  std::unique_ptr<edm::ValueMap<float> > passConversionVetoValMap(new edm::ValueMap<float>());
+  edm::ValueMap<float>::Filler passConversionVetoFiller(*passConversionVetoValMap);
+  passConversionVetoFiller.insert(probes, passConversionVetoVals.begin(), passConversionVetoVals.end());
+  passConversionVetoFiller.fill();
+  iEvent.put(std::move(passConversionVetoValMap), "passConversionVeto");
 
   std::unique_ptr<edm::ValueMap<float> > mhValMap(new edm::ValueMap<float>());
   edm::ValueMap<float>::Filler mhFiller(*mhValMap);
@@ -234,5 +318,60 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
 
   
 }
+
+template<class T>
+float ElectronVariableHelper<T>::getEffArea(float scEta){
+  // ElectronEffectiveArea::ElectronEffectiveAreaTarget electronEATarget;
+  // if ( runOnMC_ ) electronEATarget = ElectronEffectiveArea::kEleEAFall11MC;
+  // else electronEATarget = ElectronEffectiveArea::kEleEAData2012;
+  // if( dR < 0.35)
+  //   return ElectronEffectiveArea::GetElectronEffectiveArea( ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, scEta, electronEATarget);
+  // else
+  //   return ElectronEffectiveArea::GetElectronEffectiveArea( ElectronEffectiveArea::kEleGammaAndNeutralHadronIso04, scEta, electronEATarget);
+
+  // new effArea  https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/data/Summer16/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_80X.txt
+  float absEta = std::abs(scEta);
+  if ( 0.0000 >= absEta && absEta < 1.0000 ) return 0.1703;
+  if ( 1.0000 >= absEta && absEta < 1.4790 ) return 0.1715;
+  if ( 1.4790 >= absEta && absEta < 2.0000 ) return 0.1213;
+  if ( 2.0000 >= absEta && absEta < 2.2000 ) return 0.1230;
+  if ( 2.2000 >= absEta && absEta < 2.3000 ) return 0.1635;
+  if ( 2.3000 >= absEta && absEta < 2.4000 ) return 0.1937;
+  if ( 2.4000 >= absEta && absEta < 5.0000 ) return 0.2393;
+  return 0;
+}
+
+template<class T>
+bool ElectronVariableHelper<T>::PassTrigMVAHNTightv4(double thismva, double scEta){
+
+  float mva_cut=0.93;
+  if(fabs(scEta) > 1.479) mva_cut=0.93;
+  else if(fabs(scEta) > 0.8) mva_cut=0.825;
+  else mva_cut=0.9;
+
+  if(thismva > mva_cut) return true;
+  return false;
+
+}
+
+template<class T>
+bool ElectronVariableHelper<T>::PassTrigMVAHNLoose(double thismva, double scEta){
+
+  if( (fabs(scEta) < 0.8)                            && thismva > -0.02) return true;
+  if( (fabs(scEta) > 0.8) && (fabs(scEta)  < 1.479)  && thismva > -0.52) return true;
+  if( (fabs(scEta) < 2.5) && (fabs(scEta)  > 1.479)  && thismva > -0.52) return true;
+
+  return false;
+
+}
+
+
+
+
+
+
+
+
+
 
 #endif

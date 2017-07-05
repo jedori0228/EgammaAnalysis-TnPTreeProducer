@@ -89,8 +89,13 @@ EleProbeVariablesToStore = cms.PSet(
     el_dz            = cms.InputTag("eleVarHelper:dz"),
     el_dxy           = cms.InputTag("eleVarHelper:dxy"),
     el_dxysig        = cms.InputTag("eleVarHelper:dxysig"),
+    el_mva           = cms.InputTag("eleVarHelper:mva"),
+    el_HNMVATight = cms.InputTag("eleVarHelper:HNMVATight"),
+    el_HNMVALoose = cms.InputTag("eleVarHelper:HNMVALoose"),
+    el_reliso03        = cms.InputTag("eleVarHelper:reliso03"),
     el_3charge       = cms.string("chargeInfo().isGsfCtfScPixConsistent"),
     el_ecalDriven    = cms.string("ecalDrivenSeed"),
+    el_passConversionVeto = cms.InputTag("eleVarHelper:passConversionVeto"),
     
     )
 
@@ -137,6 +142,7 @@ TagVariablesToStore = cms.PSet(
     Ele_et     = cms.string("et"),
     Ele_e      = cms.string("energy"),
     Ele_q      = cms.string("charge"),
+    Ele_3charge = cms.string("chargeInfo().isGsfCtfScPixConsistent"),
     
     ## super cluster quantities
     sc_e      = cms.string("superCluster.energy"),
@@ -148,6 +154,11 @@ TagVariablesToStore = cms.PSet(
     Ele_dz            = cms.InputTag("eleVarHelper:dz"),
     Ele_dxy           = cms.InputTag("eleVarHelper:dxy"),
     Ele_dxysig        = cms.InputTag("eleVarHelper:dxysig"),
+    Ele_mva           = cms.InputTag("eleVarHelper:mva"),
+    Ele_HNMVATight = cms.InputTag("eleVarHelper:HNMVATight"),
+    Ele_HNMVALoose = cms.InputTag("eleVarHelper:HNMVALoose"),
+    Ele_reliso03        = cms.InputTag("eleVarHelper:reliso03"),
+    Ele_passConversionVeto = cms.InputTag("eleVarHelper:passConversionVeto"),
     Ele_nonTrigMVA    = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15NonTrig25nsV1Values"),
     Ele_trigMVA       = cms.InputTag("electronMVAValueMapProducer:ElectronMVAEstimatorRun2Spring15Trig25nsV1Values"),
 

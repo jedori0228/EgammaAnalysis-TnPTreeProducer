@@ -9,6 +9,9 @@
   <use   name="DataFormats/PatCandidates"/>
   <use   name="DataFormats/Candidate"/>
   <use   name="CommonTools/Utils"/>
+  <use   name="CondFormats/EgammaObjects"/>
+  <use   name="DataFormats/EgammaCandidates"/>
+  <use name="RecoEgamma/EgammaTools"/>
   <use  name="CommonTools/UtilAlgos"/>
   <use   name="RecoEgamma/EgammaHLTAlgos"/>
 <flags EDM_PLUGIN="1"/>

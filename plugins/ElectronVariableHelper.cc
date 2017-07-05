@@ -8,5 +8,5 @@
 typedef ElectronVariableHelper<pat::Electron>     PatElectronVariableHelper;
 DEFINE_FWK_MODULE(PatElectronVariableHelper);
 
-typedef ElectronVariableHelper<reco::GsfElectron> GsfElectronVariableHelper;
-DEFINE_FWK_MODULE(GsfElectronVariableHelper);
+//typedef ElectronVariableHelper<reco::GsfElectron> GsfElectronVariableHelper;
+//DEFINE_FWK_MODULE(GsfElectronVariableHelper);
