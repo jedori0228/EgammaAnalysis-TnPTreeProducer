@@ -44,8 +44,8 @@ class ElectronVariableHelper : public edm::EDProducer {
   virtual ~ElectronVariableHelper() ;
 
   virtual float getEffArea(float scEta);
-  virtual bool PassTrigMVAHNTightv4(double thismva, double scEta);
-  virtual bool PassTrigMVAHNLoose(double thismva, double scEta);
+  virtual float PassTrigMVAHNTightv4(float thismva, float scEta);
+  virtual float PassTrigMVAHNLoose(float thismva, float scEta);
 
   virtual void produce(edm::Event & iEvent, const edm::EventSetup & iSetup) override;
   
@@ -173,11 +173,11 @@ void ElectronVariableHelper<T>::produce(edm::Event & iEvent, const edm::EventSet
     passConversionVetoVals.push_back( probe->passConversionVeto() );
 
     float scEta = probe->superCluster()->eta();
-    double ecalpt = probe->ecalDrivenMomentum().pt();
-    double elEffArea = getEffArea(scEta);
-    double chIso = probe->pfIsolationVariables().sumChargedHadronPt;
-    double nhIso = probe->pfIsolationVariables().sumNeutralHadronEt;
-    double phIso = probe->pfIsolationVariables().sumPhotonEt;
+    float ecalpt = probe->ecalDrivenMomentum().pt();
+    float elEffArea = getEffArea(scEta);
+    float chIso = probe->pfIsolationVariables().sumChargedHadronPt;
+    float nhIso = probe->pfIsolationVariables().sumNeutralHadronEt;
+    float phIso = probe->pfIsolationVariables().sumPhotonEt;
 
     float relIso = ( chIso + std::max(0.0, nhIso + phIso - rhoIso*elEffArea) )/ ecalpt;
     reliso03Vals.push_back( relIso );
@@ -342,26 +342,26 @@ float ElectronVariableHelper<T>::getEffArea(float scEta){
 }
 
 template<class T>
-bool ElectronVariableHelper<T>::PassTrigMVAHNTightv4(double thismva, double scEta){
+float ElectronVariableHelper<T>::PassTrigMVAHNTightv4(float thismva, float scEta){
 
   float mva_cut=0.93;
   if(fabs(scEta) > 1.479) mva_cut=0.93;
   else if(fabs(scEta) > 0.8) mva_cut=0.825;
   else mva_cut=0.9;
 
-  if(thismva > mva_cut) return true;
-  return false;
+  if(thismva > mva_cut) return 1.;
+  return 0.;
 
 }
 
 template<class T>
-bool ElectronVariableHelper<T>::PassTrigMVAHNLoose(double thismva, double scEta){
+float ElectronVariableHelper<T>::PassTrigMVAHNLoose(float thismva, float scEta){
 
-  if( (fabs(scEta) < 0.8)                            && thismva > -0.02) return true;
-  if( (fabs(scEta) > 0.8) && (fabs(scEta)  < 1.479)  && thismva > -0.52) return true;
-  if( (fabs(scEta) < 2.5) && (fabs(scEta)  > 1.479)  && thismva > -0.52) return true;
+  if( (fabs(scEta) < 0.8)                            && thismva > -0.02) return 1.;
+  if( (fabs(scEta) > 0.8) && (fabs(scEta)  < 1.479)  && thismva > -0.52) return 1.;
+  if( (fabs(scEta) < 2.5) && (fabs(scEta)  > 1.479)  && thismva > -0.52) return 1.;
 
-  return false;
+  return 0.;
 
 }
 
