@@ -22,7 +22,7 @@ def setIDs(process, options):
                      'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V1_cff',
                      'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V1_cff',
                      'RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V2_cff',
-                     'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_100X_V2_cff'
+                     #'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_100X_V2_cff'
                      ]
                  
     for idmod in my_id_modules:
@@ -60,12 +60,12 @@ def setIDs(process, options):
     process.probePhoCutBasedMedium94X.selection = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-medium" )
     process.probePhoCutBasedTight94X.selection  = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V1-tight"  )
 
-    process.probePhoCutBasedLoose100XV2  = process.probePhoCutBasedLoose.clone()
-    process.probePhoCutBasedMedium100XV2 = process.probePhoCutBasedLoose.clone()
-    process.probePhoCutBasedTight100XV2  = process.probePhoCutBasedLoose.clone()
-    process.probePhoCutBasedLoose100XV2.selection  = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-100X-V2-loose"  )
-    process.probePhoCutBasedMedium100XV2.selection = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-100X-V2-medium" )
-    process.probePhoCutBasedTight100XV2.selection  = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-100X-V2-tight"  )
+    #process.probePhoCutBasedLoose100XV2  = process.probePhoCutBasedLoose.clone()
+    #process.probePhoCutBasedMedium100XV2 = process.probePhoCutBasedLoose.clone()
+    #process.probePhoCutBasedTight100XV2  = process.probePhoCutBasedLoose.clone()
+    #process.probePhoCutBasedLoose100XV2.selection  = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-100X-V2-loose"  )
+    #process.probePhoCutBasedMedium100XV2.selection = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-100X-V2-medium" )
+    #process.probePhoCutBasedTight100XV2.selection  = cms.InputTag("egmPhotonIDs:cutBasedPhotonID-Fall17-100X-V2-tight"  )
 
     process.probePhoMVA = process.probePhoCutBasedLoose.clone()
     process.probePhoMVA.selection = cms.InputTag("egmPhotonIDs:mvaPhoID-Spring16-nonTrig-V1-wp90")    
