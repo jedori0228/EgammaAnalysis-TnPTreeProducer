@@ -201,6 +201,7 @@ def setSequences(process, options):
         process.probeEleMVA94Xwp90isoV2        +
         process.probeEleMVA94Xwp80isoV2        +
         process.probeEleMVA94XwpHZZisoV2        +
+        process.probeEleHEEP +
         process.probeEle 
         )
     if not options['useAOD'] : process.ele_sequence += process.probeEleHLTsafe

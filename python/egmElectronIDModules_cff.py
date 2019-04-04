@@ -19,7 +19,7 @@ def setIDs(process, options):
     # define which IDs we want to produce
     my_id_modules = [
         'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff',
-        'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff',
+        'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff',
         'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Spring16_GeneralPurpose_V1_cff',
         'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V1_cff',
         'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V1_cff',
@@ -94,6 +94,7 @@ def setIDs(process, options):
     process.probeEleCutBasedMedium94X = process.probeEleCutBasedVeto.clone()
     process.probeEleCutBasedTight94X  = process.probeEleCutBasedVeto.clone()
 
+
     process.probeEleCutBasedVeto94X.selection   = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-veto"  )
     process.probeEleCutBasedLoose94X.selection  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-loose" )
     process.probeEleCutBasedMedium94X.selection = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V1-medium")
@@ -140,6 +141,8 @@ def setIDs(process, options):
     process.probeEleCutBasedMedium94XV2.selection = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V2-medium"  )
     process.probeEleCutBasedTight94XV2.selection  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V2-tight"  )
 
+    process.probeEleHEEP = process.probeEleCutBasedVeto.clone()
+    process.probeEleHEEP.selection = cms.InputTag("egmGsfElectronIDs:heepElectronID-HEEPV70")
     
     process.tagEleCutBasedTight = cms.EDProducer(eleProducer,
                                                      input     = cms.InputTag("goodElectrons"),
