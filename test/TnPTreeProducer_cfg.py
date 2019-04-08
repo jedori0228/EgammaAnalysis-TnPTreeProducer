@@ -286,10 +286,7 @@ process.tnpEleIDs = cms.EDAnalyzer("TagProbeFitTreeProducer",
                                     probeMatches  = cms.InputTag("genProbeEle"),
                                     allProbes     = cms.InputTag("probeEle"),
                                     flags         = cms.PSet(
-#                                        passingVeto       = cms.InputTag("probeEleCutBasedVeto"  ),
-#                                        passingLoose      = cms.InputTag("probeEleCutBasedLoose" ),
-#                                        passingMedium     = cms.InputTag("probeEleCutBasedMedium"),
-        #                                        passingTight      = cms.InputTag("probeEleCutBasedTight" ),
+
                                         passingVeto80X    = cms.InputTag("probeEleCutBasedVeto80X"  ),
                                         passingLoose80X   = cms.InputTag("probeEleCutBasedLoose80X" ),
                                         passingMedium80X  = cms.InputTag("probeEleCutBasedMedium80X"),
@@ -321,6 +318,9 @@ process.tnpEleIDs = cms.EDAnalyzer("TagProbeFitTreeProducer",
                                         passingMVA94Xwp80isoV2 = cms.InputTag("probeEleMVA94Xwp80isoV2" ),
 
                                         passingMVA94XwpHZZisoV2 = cms.InputTag("probeEleMVA94XwpHZZisoV2" ),
+
+                                        passingHEEP       = cms.InputTag("probeEleHEEP"),
+
                                         )
                                     )
 
