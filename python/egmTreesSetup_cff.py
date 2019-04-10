@@ -239,8 +239,27 @@ def setSequences(process, options):
         process.pho_sequence += process.genProbePho
         process.sc_sequence  += process.genProbeSC
 
-    from EgammaAnalysis.TnPTreeProducer.pileupConfiguration_cfi import pileupProducer
+    from EgammaAnalysis.TnPTreeProducer.pileupConfiguration_cfi import pileupProducer,pu_distribs, data_pu_distribs
     process.pileupReweightingProducer = pileupProducer.clone()
+
+    pu_MC_key = ""
+    pu_DATA_key = ""
+    if options['DataYear']==2016:
+      print "[egmTreesSetup_cff.py] DataYear = 2016"
+      pu_MC_key = "80X_mcRun2_asymptotic_v2"
+      pu_DATA_key = "Legacy2016"
+    elif options['DataYear']==2017:
+      print "[egmTreesSetup_cff.py] DataYear = 2017"
+      #### FIXME not it is a copied of 2016
+      pu_MC_key = "94X_mcRun2"
+      pu_DATA_key = "Run2017DATA"
+
+    print "[egmTreesSetup_cff.py] Using MC pu dist = "+pu_MC_key
+    print pu_distribs[pu_MC_key]
+    print "[egmTreesSetup_cff.py] Using DATA pu dist = "+pu_DATA_key
+    print data_pu_distribs[pu_DATA_key]
+    process.pileupReweightingProducer.PileupMC = cms.vdouble(pu_distribs[pu_MC_key])
+    process.pileupReweightingProducer.PileupData = cms.vdouble(data_pu_distribs[pu_DATA_key])
     if options['useAOD']: process.pileupReweightingProducer.pileupInfoTag = "addPileupInfo"
 
     process.mc_sequence = cms.Sequence()

@@ -93,6 +93,7 @@ varOptions.parseArguments()
 ###################################################################
 
 options = dict()
+options['DataYear']             = 2016
 options['useAOD']               = cms.bool(varOptions.isAOD)
 
 options['HLTProcessName']       = varOptions.HLTname

@@ -93,6 +93,7 @@ varOptions.parseArguments()
 ###################################################################
 
 options = dict()
+options['DataYear']             = 2017
 options['useAOD']               = cms.bool(varOptions.isAOD)
 
 options['HLTProcessName']       = varOptions.HLTname
@@ -109,7 +110,10 @@ if options['useAOD']:
 options['ELECTRON_CUTS']        = "ecalEnergy*sin(superClusterPosition.theta)>5.0 &&  (abs(-log(tan(superClusterPosition.theta/2)))<2.5)"
 options['SUPERCLUSTER_CUTS']    = "abs(eta)<2.5 &&  et>5.0"
 options['PHOTON_CUTS']          = "(abs(-log(tan(superCluster.position.theta/2)))<=2.5) && pt> 10"
-options['ELECTRON_TAG_CUTS']    = "(abs(-log(tan(superCluster.position.theta/2)))<=2.1) && !(1.4442<=abs(-log(tan(superClusterPosition.theta/2)))<=1.566) && pt >= 30.0"
+#options['ELECTRON_TAG_CUTS']    = "(abs(-log(tan(superCluster.position.theta/2)))<=2.1) && !(1.4442<=abs(-log(tan(superClusterPosition.theta/2)))<=1.566) && pt >= 30.0"
+#### I think we don't need sceta<2.1 for 2017
+#### If not, we can apply it later
+options['ELECTRON_TAG_CUTS']    = "!(1.4442<=abs(-log(tan(superClusterPosition.theta/2)))<=1.566) && pt >= 30.0"
 
 options['MAXEVENTS']            = cms.untracked.int32(varOptions.maxEvents) 
 #options['MAXEVENTS']            = 2000
@@ -131,18 +135,18 @@ if (varOptions.isMC):
     options['isMC']                = cms.bool(True)
     options['OUTPUT_FILE_NAME']    = "TnPTree_mc.root"
     if varOptions.isAOD :  options['OUTPUT_FILE_NAME']    = "TnPTree_mc_aod.root"
-    options['TnPPATHS']            = cms.vstring("HLT_Ele27_eta2p1_WPTight_Gsf_v*") #FOR 2016
-    options['TnPHLTTagFilters']    = cms.vstring("hltEle27erWPTightGsfTrackIsoFilter") #FOR 2016
-    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle27WPTightGsfTrackIsoFilter","hltEG175HEFilter")
+    options['TnPPATHS']            = cms.vstring("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*")
+    options['TnPHLTTagFilters']    = cms.vstring("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter","hltEGL1SingleEGOrFilter")
+    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle35noerWPTightGsfTrackIsoFilter","hltEG200HEFilter")
     options['TnPHLTProbeFilters']  = cms.vstring()
-    options['GLOBALTAG']           = '94X_mcRun2_asymptotic_v3'
+    options['GLOBALTAG']           = '94X_mc2017_realistic_v17'
 else:
     options['OUTPUT_FILE_NAME']    = "TnPTree_data.root"
-    options['TnPPATHS']            = cms.vstring("HLT_Ele27_eta2p1_WPTight_Gsf_v*") #FOR 2016
-    options['TnPHLTTagFilters']    = cms.vstring("hltEle27erWPTightGsfTrackIsoFilter") #FOR 2016
-    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle27WPTightGsfTrackIsoFilter","hltEG175HEFilter")
+    options['TnPPATHS']            = cms.vstring("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*") 
+    options['TnPHLTTagFilters']    = cms.vstring("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter","hltEGL1SingleEGOrFilter")
+    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle35noerWPTightGsfTrackIsoFilter","hltEG200HEFilter")
     options['TnPHLTProbeFilters']  = cms.vstring()
-    options['GLOBALTAG']           = '94X_dataRun2_v10'
+    options['GLOBALTAG']           = '94X_dataRun2_v11'
 
 if varOptions.GT != "auto" :
     options['GLOBALTAG'] = varOptions.GT
@@ -160,29 +164,29 @@ if varOptions.GT != "auto" :
 #if options['useAOD'] : from EgammaAnalysis.TnPTreeProducer.etc.tnpInputTestFiles_cff import filesAOD_empty as inputs #switch to 2017 samples if want to cmsRun on AOD
 
 options['INPUT_FILE_NAME'] = cms.untracked.vstring(
-'/store/data/Run2016H/SingleElectron/MINIAOD/17Jul2018-v1/00000/A653C523-898B-E811-AE8D-0025905B85DC.root',
-'/store/data/Run2016H/SingleElectron/MINIAOD/17Jul2018-v1/00000/FE6AFFE3-798B-E811-86D1-0025905A613C.root',
-'/store/data/Run2016H/SingleElectron/MINIAOD/17Jul2018-v1/00000/326B5EDD-798B-E811-948C-0CC47A7C35D2.root',
-'/store/data/Run2016H/SingleElectron/MINIAOD/17Jul2018-v1/00000/944E4220-598B-E811-8FDC-0025905B85B8.root',
-'/store/data/Run2016H/SingleElectron/MINIAOD/17Jul2018-v1/00000/64E54575-5D8B-E811-8507-0025905B859A.root',
-'/store/data/Run2016H/SingleElectron/MINIAOD/17Jul2018-v1/00000/42D5EB6C-018B-E811-84E5-0CC47A78A478.root',
-'/store/data/Run2016H/SingleElectron/MINIAOD/17Jul2018-v1/00000/B81D0682-5F8A-E811-B3C1-0025905A6066.root',
-'/store/data/Run2016H/SingleElectron/MINIAOD/17Jul2018-v1/00000/7438C576-018B-E811-B4B7-0025905A60F2.root',
-'/store/data/Run2016H/SingleElectron/MINIAOD/17Jul2018-v1/00000/DAF9304C-F88A-E811-BAEB-0025905A60F2.root',
-'/store/data/Run2016H/SingleElectron/MINIAOD/17Jul2018-v1/00000/E4193B73-018B-E811-B737-0CC47A7C35F8.root',
+'/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/60000/66EAEA69-3E37-E811-BC12-008CFAC91CD4.root',
+'/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/60000/8C7D758F-3E37-E811-8F27-008CFAC91CE4.root',
+'/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/60000/589F3AB3-6737-E811-8A85-008CFAE45048.root',
+'/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/60000/5ED671C6-6737-E811-9959-008CFAC91110.root',
+'/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/60000/E48993B6-6737-E811-BF37-008CFAC91B68.root',
+'/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/60000/5C0B9DAE-6737-E811-B4DE-008CFAE45368.root',
+'/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/60000/6A1B4EC6-6737-E811-8C03-008CFAE45308.root',
+'/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/60000/94A4C2CB-6737-E811-AC18-008CFA5D275C.root',
+'/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/60000/D4EAB7AF-6737-E811-96F3-008CFAE450B4.root',
+'/store/data/Run2017B/SingleElectron/MINIAOD/31Mar2018-v1/60000/78C31DAF-6737-E811-A952-008CFAC941AC.root',
 )
 if varOptions.isMC:
   options['INPUT_FILE_NAME'] = cms.untracked.vstring(
-'/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/120000/ACDA5D95-3EDF-E811-AC6F-842B2B6AEE8B.root',
-'/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/120000/EE95C7CD-3ADF-E811-AEEF-842B2B6F8647.root',
-'/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/120000/C68F0587-3ADF-E811-9850-842B2B6AE7AB.root',
-'/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/120000/B0A6C7CD-3ADF-E811-9FD0-842B2B6F8647.root',
-'/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/120000/74DB5D95-3EDF-E811-AC93-842B2B6AEE8B.root',
-'/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/120000/C40DE067-44DF-E811-8A35-D4AE5280690B.root',
-'/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/120000/34DF9F61-44DF-E811-BBB5-D4AE5280690B.root',
-'/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/120000/F47E26F1-46DF-E811-B835-D4AE529017EB.root',
-'/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/120000/567020F4-46DF-E811-BBA7-D4AE529017EB.root',
-'/store/mc/RunIISummer16MiniAODv3/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/120000/6ACED6F6-4DDF-E811-A191-782BCB3BCE9F.root',
+'/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/0256D125-5A44-E811-8C69-44A842CFD64D.root',
+'/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/4EBE7EE6-6444-E811-8AC0-B499BAAC0626.root',
+'/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/38E00F78-7244-E811-9E78-484D7E8DF092.root',
+'/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/C881E0EB-4244-E811-87CB-A4BF0112BE0E.root',
+'/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/7AAF1A9C-4644-E811-A6F7-A4BF0112BE0E.root',
+'/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/BE82E948-4544-E811-A6E0-A4BF0112BE02.root',
+'/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/B2F4F697-4644-E811-822F-A4BF0112BE28.root',
+'/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/28214488-4844-E811-ABE4-001E67E6F805.root',
+'/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/DEA74370-4744-E811-B043-001E677924BA.root',
+'/store/mc/RunIIFall17MiniAODv2/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1/70000/AED9AF8D-4844-E811-909F-001E6779283A.root',
 )
 #for file in open("file.list").readlines():
 #    inputs['data'].append(file.strip())
