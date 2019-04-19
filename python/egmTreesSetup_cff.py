@@ -250,9 +250,12 @@ def setSequences(process, options):
       pu_DATA_key = "Legacy2016"
     elif options['DataYear']==2017:
       print "[egmTreesSetup_cff.py] DataYear = 2017"
-      #### FIXME not it is a copied of 2016
       pu_MC_key = "94X_mcRun2"
       pu_DATA_key = "Run2017DATA"
+    elif options['DataYear']==2018:
+      print "[egmTreesSetup_cff.py] DataYear = 2018"
+      pu_MC_key = "102X_mcRun2"
+      pu_DATA_key = "Run2018DATA"
 
     print "[egmTreesSetup_cff.py] Using MC pu dist = "+pu_MC_key
     print pu_distribs[pu_MC_key]

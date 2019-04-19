@@ -60,11 +60,7 @@ varOptions.register(
     )
 
 varOptions.register(
-    #"GT","auto",
-    #"GT","101X_dataRun2_Prompt_v9",
-    #"GT","94X_dataRun2_ReReco_EOY17_v6",
-    #"GT","80X_dataRun2_2016LegacyRepro_v4",
-    "GT","80X_mcRun2_asymptotic_2016_TrancheIV_v8",
+    "GT","",
     VarParsing.multiplicity.singleton,
     VarParsing.varType.string,
     "Global Tag to be used"
@@ -148,7 +144,7 @@ else:
     options['TnPHLTProbeFilters']  = cms.vstring()
     options['GLOBALTAG']           = '94X_dataRun2_v11'
 
-if varOptions.GT != "auto" :
+if varOptions.GT != "" :
     options['GLOBALTAG'] = varOptions.GT
 
 
@@ -204,6 +200,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 
 from Configuration.AlCa.GlobalTag import GlobalTag
+print '@@@@ GT = '+str(options['GLOBALTAG'])
 process.GlobalTag = GlobalTag(process.GlobalTag, options['GLOBALTAG'] , '')
 
 import EgammaAnalysis.TnPTreeProducer.egmTreesSetup_cff as tnpSetup

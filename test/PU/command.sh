@@ -12,3 +12,11 @@ pileup_2016_35fb.root
 --maxPileupBin 99 --numPileupBins 99 \
 pileup_2017_41fb.root
 
+
+./pileupCalc.py \
+-i /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt \
+--inputLumiJSON /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions18/13TeV/PileUp/pileup_latest.txt \
+--calcMode true --minBiasXsec 69200 \
+--maxPileupBin 100 --numPileupBins 100 \
+pileup_2018_60fb.root
+python PhysicsTools/TagAndProbe/test/utilities/dumpPileup.py pileup_2018_60fb.root
