@@ -19,7 +19,7 @@ config.JobType.sendExternalFolder     = True
 
 config.Data.inputDBS = 'global'
 config.Data.publication = False
-config.Data.outLFNDirBase = '/store/user/%s/EGammaTnPNtuple/2018/' % (getUsernameFromSiteDB())
+config.Data.outLFNDirBase = '/store/user/%s/EGammaTnPNtuple_Ele115Added/2018/' % (getUsernameFromSiteDB())
 config.Site.storageSite = 'T2_KR_KNU'
 
 if __name__ == '__main__':
@@ -48,11 +48,11 @@ if __name__ == '__main__':
     config.General.requestName  = 'DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8'
     config.Data.inputDataset    = '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM'
     config.Data.unitsPerJob = 1
-    submit(config)
+    #submit(config)
 
     config.General.requestName  = 'DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8'
     config.Data.inputDataset    = '/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM'
-    submit(config)
+    #submit(config)
 
     ##### now submit DATA
 

@@ -19,7 +19,7 @@ config.JobType.sendExternalFolder     = True
 
 config.Data.inputDBS = 'global'
 config.Data.publication = False
-config.Data.outLFNDirBase = '/store/user/%s/EGammaTnPNtuple/2016/' % (getUsernameFromSiteDB())
+config.Data.outLFNDirBase = '/store/user/%s/EGammaTnPNtuple_Ele115Added/2016/' % (getUsernameFromSiteDB())
 config.Site.storageSite = 'T2_KR_KNU'
 
 if __name__ == '__main__':
