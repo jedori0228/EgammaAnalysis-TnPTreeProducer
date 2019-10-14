@@ -133,14 +133,14 @@ if (varOptions.isMC):
     if varOptions.isAOD :  options['OUTPUT_FILE_NAME']    = "TnPTree_mc_aod.root"
     options['TnPPATHS']            = cms.vstring("HLT_Ele32_WPTight_Gsf_v*")
     options['TnPHLTTagFilters']    = cms.vstring("hltEle32WPTightGsfTrackIsoFilter")
-    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle32WPTightGsfTrackIsoFilter","hltEG200HEFilter")
+    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle32WPTightGsfTrackIsoFilter","hltEG200HEFilter","hltEle115CaloIdVTGsfTrkIdTGsfDphiFilter")
     options['TnPHLTProbeFilters']  = cms.vstring()
     options['GLOBALTAG']           = '102X_upgrade2018_realistic_v18'
 else:
     options['OUTPUT_FILE_NAME']    = "TnPTree_data.root"
     options['TnPPATHS']            = cms.vstring("HLT_Ele32_WPTight_Gsf_v*") 
     options['TnPHLTTagFilters']    = cms.vstring("hltEle32WPTightGsfTrackIsoFilter")
-    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle32WPTightGsfTrackIsoFilter","hltEG200HEFilter")
+    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle32WPTightGsfTrackIsoFilter","hltEG200HEFilter","hltEle115CaloIdVTGsfTrkIdTGsfDphiFilter")
     options['TnPHLTProbeFilters']  = cms.vstring()
     options['GLOBALTAG']           = '102X_dataRun2_Sep2018ABC_v2' ## for periodD prompt, '102X_dataRun2_Prompt_v13'
 

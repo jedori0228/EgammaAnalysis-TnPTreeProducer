@@ -133,14 +133,14 @@ if (varOptions.isMC):
     if varOptions.isAOD :  options['OUTPUT_FILE_NAME']    = "TnPTree_mc_aod.root"
     options['TnPPATHS']            = cms.vstring("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*")
     options['TnPHLTTagFilters']    = cms.vstring("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter","hltEGL1SingleEGOrFilter")
-    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle35noerWPTightGsfTrackIsoFilter","hltEG200HEFilter")
+    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle35noerWPTightGsfTrackIsoFilter","hltEG200HEFilter","hltEle115CaloIdVTGsfTrkIdTGsfDphiFilter")
     options['TnPHLTProbeFilters']  = cms.vstring()
     options['GLOBALTAG']           = '94X_mc2017_realistic_v17'
 else:
     options['OUTPUT_FILE_NAME']    = "TnPTree_data.root"
     options['TnPPATHS']            = cms.vstring("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*") 
     options['TnPHLTTagFilters']    = cms.vstring("hltEle32L1DoubleEGWPTightGsfTrackIsoFilter","hltEGL1SingleEGOrFilter")
-    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle35noerWPTightGsfTrackIsoFilter","hltEG200HEFilter")
+    options['HLTFILTERTOMEASURE']  = cms.vstring("hltEle35noerWPTightGsfTrackIsoFilter","hltEG200HEFilter","hltEle115CaloIdVTGsfTrkIdTGsfDphiFilter")
     options['TnPHLTProbeFilters']  = cms.vstring()
     options['GLOBALTAG']           = '94X_dataRun2_v11'
 
